@@ -28,8 +28,15 @@ class BoW(TransformerMixin):
         # task: find up to self.k most frequent tokens in texts_train,
         # sort them by number of occurences (highest first)
         # store most frequent tokens in self.bow
-        raise NotImplementedError
-
+        words = {}
+        for raw in X:
+            for word in raw.split():
+                if word in words.keys():
+                    words[word] += 1
+                else:
+                    words[word] = 1
+        self.bow = sorted(list(words.items()), key = lambda x: x[1], reverse=True)
+        self.bow = [elem[0] for elem in self.bow][:self.k]
         # fit method must always return self
         return self
 
@@ -40,8 +47,13 @@ class BoW(TransformerMixin):
         :return bow_feature: feature vector, made by bag of words
         """
 
-        result = None
-        raise NotImplementedError
+        result = [0] * len(self.bow)
+        for word in text.split():
+            try:
+                ind = self.bow.index(word)
+                result[ind] += 1
+            except ValueError:
+                continue
         return np.array(result, "float32")
 
     def transform(self, X: np.ndarray, y=None) -> np.ndarray:
@@ -76,14 +88,26 @@ class TfIdf(TransformerMixin):
         # self.idf[term] = log(total # of documents / # of documents with term in it)
         self.idf = OrderedDict()
 
+
     def fit(self, X: np.ndarray, y=None):
         """
         :param X: array of texts to be trained on
         """
-        raise NotImplementedError
+        tokens = set(' '.join(X).split())
+        tokens_cnt = {token: 0 for token in tokens}
+        for token in tokens:
+            n = 0
+            for doc in X:
+                if token in doc:
+                    tokens_cnt[token] += 1
+            tokens_cnt[token] = np.log(X.shape[0] / tokens_cnt[token])
+        
+        tokens = sorted(tokens_cnt.items(), key=lambda x: x[1], reverse=True)[:self.k]
+        self.idf = OrderedDict(tokens)
 
         # fit method must always return self
         return self
+
 
     def _text_to_tf_idf(self, text: str) -> np.ndarray:
         """
@@ -93,9 +117,17 @@ class TfIdf(TransformerMixin):
         :return tf_idf: tf-idf features
         """
 
-        result = None
-        raise NotImplementedError
+        result = [0] * len(self.idf)
+        for token in text.split():
+            try:
+                tf = text.count(token)
+                idf = self.idf[token]
+                idx = list(self.idf.keys()).index(token)
+                result[idx] = tf * idf
+            except KeyError:
+                continue            
         return np.array(result, "float32")
+
 
     def transform(self, X: np.ndarray, y=None) -> np.ndarray:
         """
