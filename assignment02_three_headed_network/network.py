@@ -16,9 +16,6 @@ class ThreeInputsNet(nn.Module):
         self.title = nn.Sequential(
             nn.Conv1d(64, 128, kernel_size=3),
             nn.ReLU(),
-            nn.Conv1d(128, 128, kernel_size=3),
-            nn.ReLU(),
-            nn.BatchNorm1d(128),
             nn.Conv1d(128, 128, kernel_size=1),
             nn.ReLU(),
             nn.AdaptiveMaxPool1d(1),
@@ -39,7 +36,7 @@ class ThreeInputsNet(nn.Module):
 )
         
         self.category_out = nn.Sequential(
-            nn.Linear(3768, 128),
+            nn.Linear(3745, 128),
             nn.ReLU(),
             nn.Linear(128, 64),
 )
@@ -67,8 +64,8 @@ class ThreeInputsNet(nn.Module):
             category.view(category.size(0), -1)
             ],
             dim=1)
-        
-        out = nn.ReLU()((self.inter_dense(concatenated)))
+        print(concatenated.shape)
+        out = F.relu((self.inter_dense(concatenated)))
         out = self.final_dense(out)
         
         return out
