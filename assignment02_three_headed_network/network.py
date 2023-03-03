@@ -13,13 +13,36 @@ class ThreeInputsNet(nn.Module):
     def __init__(self, n_tokens, n_cat_features, concat_number_of_features, hid_size=64):
         super(ThreeInputsNet, self).__init__()
         self.title_emb = nn.Embedding(n_tokens, embedding_dim=hid_size)
-        # <YOUR CODE HERE>        
+        self.title = nn.Sequential(
+            nn.Conv1d(64, 128, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv1d(128, 128, kernel_size=3),
+            nn.ReLU(),
+            nn.BatchNorm1d(128),
+            nn.Conv1d(128, 128, kernel_size=1),
+            nn.ReLU(),
+            nn.AdaptiveMaxPool1d(1),
+            nn.Flatten(),
+)     
         
         self.full_emb = nn.Embedding(num_embeddings=n_tokens, embedding_dim=hid_size)
-        # <YOUR CODE HERE>
+        self. full = nn.Sequential(
+            nn.Conv1d(64, 128, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv1d(128, 128, kernel_size=3),
+            nn.ReLU(),
+            nn.BatchNorm1d(128),
+            nn.Conv1d(128, 128, kernel_size=3),
+            nn.ReLU(),
+            nn.AdaptiveMaxPool1d(1),
+            nn.Flatten(),
+)
         
-        self.category_out = # <YOUR CODE HERE>
-
+        self.category_out = nn.Sequential(
+            nn.Linear(3768, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+)
 
         # Example for the final layers (after the concatenation)
         self.inter_dense = nn.Linear(in_features=concat_number_of_features, out_features=hid_size*2)
@@ -30,12 +53,12 @@ class ThreeInputsNet(nn.Module):
     def forward(self, whole_input):
         input1, input2, input3 = whole_input
         title_beg = self.title_emb(input1).permute((0, 2, 1))
-        title = # <YOUR CODE HERE>
+        title = self.title(title_beg)
         
         full_beg = self.full_emb(input2).permute((0, 2, 1))
-        full = # <YOUR CODE HERE>        
+        full = self.full(full_beg)
         
-        category = # <YOUR CODE HERE>        
+        category = self.category_out(input3)       
         
         concatenated = torch.cat(
             [
@@ -45,6 +68,7 @@ class ThreeInputsNet(nn.Module):
             ],
             dim=1)
         
-        out = # <YOUR CODE HERE>
+        out = nn.ReLU()((self.inter_dense(concatenated)))
+        out = self.final_dense(out)
         
         return out
