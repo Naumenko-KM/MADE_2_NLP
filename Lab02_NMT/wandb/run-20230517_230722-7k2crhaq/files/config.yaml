@@ -1,0 +1,48 @@
+wandb_version: 1
+
+learning_rate:
+  desc: null
+  value: 0.02
+encoder:
+  desc: null
+  value: distilbert-base-multilingual-cased
+decoder:
+  desc: null
+  value: t5-small
+epochs:
+  desc: null
+  value: 10
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.13
+    cli_version: 0.15.2
+    framework: huggingface
+    huggingface_version: 4.24.0
+    is_jupyter_run: true
+    is_kaggle_kernel: false
+    start_time: 1684354042.891845
+    t:
+      1:
+      - 1
+      - 5
+      - 11
+      - 49
+      - 53
+      - 55
+      2:
+      - 1
+      - 5
+      - 11
+      - 49
+      - 53
+      - 55
+      3:
+      - 16
+      - 23
+      4: 3.9.13
+      5: 0.15.2
+      6: 4.24.0
+      8:
+      - 1
+      - 5
