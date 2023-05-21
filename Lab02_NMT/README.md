@@ -1,3 +1,33 @@
-Lab assignment #2
-Neural Machine Translation on EN-RU dataset
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/girafe-ai/natural-language-processing/blob/23s_made/homeworks/Lab02_NMT/lab02_Neural_Machine_Translation.ipynb)
+# Отчет
+## Задание
+получить модели для перевода en -> ru с bleu не меньше 21.
+
+## Данные
+50 000 переводов описания отелей.
+```
+Macedonia International Airport is 130 km away.	Расстояние до международного аэропорта «Македония» составляет 130 км.
+All units also include a private bathroom with shower equipped with a hairdryer.	Все номера располагают собственной ванной комнатой с душем и феном.
+```
+## Эксперимент 1
+В качестве модели были выбраны разные encoder и decoder предобученные на задачу языкового моделирования, в эксперименте обучалась их связка на задачу перевода.
+```
+encoder - distilbert-base-multilingual-cased
+decoder - t5-small
+bleu - 21.2
+```
+![plot](experiment_1.png)
+Общий смысл предложения понять можно, но качество оставляет желать лучшего
+
+
+## Эксперимент 2
+Посмотрим на модель предобученную на задачу перевода.
+```
+model - Helsinki-NLP/opus-mt-en-ru
+bleu - 46.1
+```
+![plot](experiment_2.png)
+
+Отличный перевод, только символы <> не отобразились.
+
+## Эксперимент 3
+Попробуем дообучить модель на наших данных
